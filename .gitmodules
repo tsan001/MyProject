@@ -1,0 +1,3 @@
+[submodule "Assets/Data"]
+	path = Assets/Data
+	url = https://github.com/tsan001/Data.git
