@@ -8,44 +8,55 @@ using UnityEngine;
 
 public class BuildScript
 {
-    [MenuItem("Build/Build Android Addressables")]
     public static void BuildAndroidAddressables()
     {
-        BuildAddressables();
+        string buildVersion = GetCommandLineArg("-buildVersion");
+        SetVersion(buildVersion);
+        BuildAddressables(buildVersion);
     }
 
-    [MenuItem("Build/Build Android Player")]
     public static void BuildAndroidPlayer()
     {
-        UpdateVersion();
+        string buildVersion = GetCommandLineArg("-buildVersion");
+        SetVersion(buildVersion);
         BuildPlayer(BuildTarget.Android, "Builds/Android/MyGame.apk");
     }
 
-    [MenuItem("Build/Build Android Bundle")]
     public static void BuildAndroidBundle()
     {
-        UpdateVersion();
+        string buildVersion = GetCommandLineArg("-buildVersion");
+        SetVersion(buildVersion);
         EditorUserBuildSettings.buildAppBundle = true;
         BuildPlayer(BuildTarget.Android, "Builds/Android/MyGame.aab");
         EditorUserBuildSettings.buildAppBundle = false; // Reset to default after build
     }
 
-    [MenuItem("Build/Build iOS Addressables")]
     public static void BuildIOSAddressables()
     {
-        BuildAddressables();
+        string buildVersion = GetCommandLineArg("-buildVersion");
+        SetVersion(buildVersion);
+        BuildAddressables(buildVersion);
     }
 
-    [MenuItem("Build/Build iOS Player")]
     public static void BuildIOSPlayer()
     {
-        UpdateVersion();
+        string buildVersion = GetCommandLineArg("-buildVersion");
+        SetVersion(buildVersion);
         BuildPlayer(BuildTarget.iOS, "Builds/iOS/");
     }
 
-    private static void BuildAddressables()
+    private static void BuildAddressables(string version)
     {
         AddressableAssetSettings.BuildPlayerContent();
+        string targetFolder = $"AddressableBuilds/{version}";
+        if (!Directory.Exists(targetFolder))
+        {
+            Directory.CreateDirectory(targetFolder);
+        }
+        foreach (var file in Directory.GetFiles("Library/com.unity.addressables/StreamingAssetsCopy"))
+        {
+            File.Copy(file, Path.Combine(targetFolder, Path.GetFileName(file)), overwrite: true);
+        }
     }
 
     private static void BuildPlayer(BuildTarget target, string locationPathName)
@@ -75,27 +86,23 @@ public class BuildScript
         }
     }
 
-    private static void UpdateVersion()
+    private static void SetVersion(string version)
     {
-        string versionFilePath = "version.txt";
-        if (File.Exists(versionFilePath))
-        {
-            string version = File.ReadAllText(versionFilePath).Trim();
-            string[] versionParts = version.Split('.');
-            int major = int.Parse(versionParts[0]);
-            int minor = int.Parse(versionParts[1]);
-            int build = int.Parse(versionParts[2]) + 1;
+        PlayerSettings.bundleVersion = version;
+        PlayerSettings.Android.bundleVersionCode = int.Parse(version.Split('.')[2]);
+        PlayerSettings.iOS.buildNumber = version;
+    }
 
-            string newVersion = $"{major}.{minor}.{build}";
-            File.WriteAllText(versionFilePath, newVersion);
-
-            PlayerSettings.bundleVersion = newVersion;
-            PlayerSettings.Android.bundleVersionCode = build;
-            PlayerSettings.iOS.buildNumber = newVersion;
-        }
-        else
+    private static string GetCommandLineArg(string name)
+    {
+        var args = System.Environment.GetCommandLineArgs();
+        for (int i = 0; i < args.Length; i++)
         {
-            Debug.LogError("Version file not found!");
+            if (args[i] == name && args.Length > i + 1)
+            {
+                return args[i + 1];
+            }
         }
+        return null;
     }
 }
