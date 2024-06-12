@@ -48,14 +48,18 @@ public class BuildScript
     private static void BuildAddressables(string version, string platform)
     {
         AddressableAssetSettings.BuildPlayerContent();
+        string sourceFolder = "ServerData"; // Addressables 빌드 출력 경로 (프로젝트 설정에 따라 변경 가능)
         string targetFolder = $"serverdata/{platform}/{version}";
+
         if (!Directory.Exists(targetFolder))
         {
             Directory.CreateDirectory(targetFolder);
         }
-        foreach (var file in Directory.GetFiles("Library/com.unity.addressables/StreamingAssetsCopy"))
+
+        foreach (var file in Directory.GetFiles(sourceFolder, "*.*", SearchOption.AllDirectories))
         {
-            File.Copy(file, Path.Combine(targetFolder, Path.GetFileName(file)), overwrite: true);
+            string targetPath = Path.Combine(targetFolder, Path.GetFileName(file));
+            File.Copy(file, targetPath, overwrite: true);
         }
     }
 
