@@ -12,7 +12,7 @@ public class BuildScript
     {
         string buildVersion = GetCommandLineArg("-buildVersion");
         SetVersion(buildVersion);
-        BuildAddressables(buildVersion);
+        BuildAddressables(buildVersion, "android");
     }
 
     public static void BuildAndroidPlayer()
@@ -35,7 +35,7 @@ public class BuildScript
     {
         string buildVersion = GetCommandLineArg("-buildVersion");
         SetVersion(buildVersion);
-        BuildAddressables(buildVersion);
+        BuildAddressables(buildVersion, "ios");
     }
 
     public static void BuildIOSPlayer()
@@ -45,10 +45,10 @@ public class BuildScript
         BuildPlayer(BuildTarget.iOS, "Builds/iOS/");
     }
 
-    private static void BuildAddressables(string version)
+    private static void BuildAddressables(string version, string platform)
     {
         AddressableAssetSettings.BuildPlayerContent();
-        string targetFolder = $"AddressableBuilds/{version}";
+        string targetFolder = $"serverdata/{platform}/{version}";
         if (!Directory.Exists(targetFolder))
         {
             Directory.CreateDirectory(targetFolder);
