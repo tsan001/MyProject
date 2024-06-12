@@ -12,7 +12,7 @@ public class BuildScript
     {
         string buildVersion = GetCommandLineArg("-buildVersion");
         SetVersion(buildVersion);
-        BuildAddressables(buildVersion, "android");
+        BuildAddressables(buildVersion, "Android");
     }
 
     public static void BuildAndroidPlayer()
@@ -35,7 +35,7 @@ public class BuildScript
     {
         string buildVersion = GetCommandLineArg("-buildVersion");
         SetVersion(buildVersion);
-        BuildAddressables(buildVersion, "ios");
+        BuildAddressables(buildVersion, "iOS");
     }
 
     public static void BuildIOSPlayer()
@@ -48,8 +48,8 @@ public class BuildScript
     private static void BuildAddressables(string version, string platform)
     {
         AddressableAssetSettings.BuildPlayerContent();
-        string sourceFolder = $"ServerData/{platform}";
-        string targetFolder = $"serverdata/{platform}/{version}";
+        string sourceFolder = $"Library/com.unity.addressables/aa/{platform}";
+        string targetFolder = $"serverdata/{platform.ToLower()}/{version}";
 
         if (!Directory.Exists(targetFolder))
         {
@@ -58,7 +58,13 @@ public class BuildScript
 
         foreach (var file in Directory.GetFiles(sourceFolder, "*.*", SearchOption.AllDirectories))
         {
-            string targetPath = Path.Combine(targetFolder, Path.GetFileName(file));
+            string relativePath = file.Substring(sourceFolder.Length + 1);
+            string targetPath = Path.Combine(targetFolder, relativePath);
+            string targetDir = Path.GetDirectoryName(targetPath);
+            if (!Directory.Exists(targetDir))
+            {
+                Directory.CreateDirectory(targetDir);
+            }
             File.Copy(file, targetPath, overwrite: true);
         }
     }
