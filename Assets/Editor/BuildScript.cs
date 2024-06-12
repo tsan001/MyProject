@@ -42,13 +42,13 @@ public class BuildScript
     {
         string buildVersion = GetCommandLineArg("-buildVersion");
         SetVersion(buildVersion);
-        BuildPlayer(BuildTarget.iOS, "Builds/iOS/");
+        BuildPlayer(BuildTarget.iOS, "Builds/iOS");
     }
 
     private static void BuildAddressables(string version, string platform)
     {
         AddressableAssetSettings.BuildPlayerContent();
-        string sourceFolder = $"Library/com.unity.addressables/aa/{platform}";
+        string sourceFolder = $"Library/com.unity.addressables/aa/{platform.ToLower()}";
         string targetFolder = $"serverdata/{platform.ToLower()}/{version}";
 
         if (!Directory.Exists(targetFolder))
@@ -56,16 +56,19 @@ public class BuildScript
             Directory.CreateDirectory(targetFolder);
         }
 
-        foreach (var file in Directory.GetFiles(sourceFolder, "*.*", SearchOption.AllDirectories))
+        CopyFilesRecursively(sourceFolder, targetFolder);
+    }
+
+    private static void CopyFilesRecursively(string sourcePath, string targetPath)
+    {
+        foreach (string dirPath in Directory.GetDirectories(sourcePath, "*", SearchOption.AllDirectories))
         {
-            string relativePath = file.Substring(sourceFolder.Length + 1);
-            string targetPath = Path.Combine(targetFolder, relativePath);
-            string targetDir = Path.GetDirectoryName(targetPath);
-            if (!Directory.Exists(targetDir))
-            {
-                Directory.CreateDirectory(targetDir);
-            }
-            File.Copy(file, targetPath, overwrite: true);
+            Directory.CreateDirectory(dirPath.Replace(sourcePath, targetPath));
+        }
+
+        foreach (string newPath in Directory.GetFiles(sourcePath, "*.*", SearchOption.AllDirectories))
+        {
+            File.Copy(newPath, newPath.Replace(sourcePath, targetPath), true);
         }
     }
 
