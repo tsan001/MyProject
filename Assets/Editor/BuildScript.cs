@@ -13,7 +13,7 @@ public class BuildScript
     {
         string buildVersion = GetCommandLineArg("-buildVersion");
         SetVersion(buildVersion);
-        SetAddressablePaths("Android", buildVersion);
+        SetAddressablePaths(BuildTarget.Android, buildVersion);
         BuildAddressables();
     }
 
@@ -37,7 +37,7 @@ public class BuildScript
     {
         string buildVersion = GetCommandLineArg("-buildVersion");
         SetVersion(buildVersion);
-        SetAddressablePaths("iOS", buildVersion);
+        SetAddressablePaths(BuildTarget.iOS, buildVersion);
         BuildAddressables();
     }
 
@@ -48,24 +48,24 @@ public class BuildScript
         BuildPlayer(BuildTarget.iOS, "Builds/iOS");
     }
 
-    private static void SetAddressablePaths(string platform, string version)
+    private static void SetAddressablePaths(BuildTarget target, string version)
     {
         var settings = AddressableAssetSettingsDefaultObject.Settings;
         var profileSettings = settings.profileSettings;
         var profileId = settings.activeProfileId;
 
-        string buildPath = $"ServerData/{platform}/{version}";
-        string loadPath = $"ServerData/{platform}/{version}";
+        string platform = target.ToString();
+        string remoteBuildPath = $"ServerData/{platform}/{version}";
+        string remoteLoadPath = $"ServerData/{platform}/{version}";
 
-        profileSettings.SetValue(profileId, "RemoteBuildPath", buildPath);
-        profileSettings.SetValue(profileId, "RemoteLoadPath", loadPath);
+        profileSettings.SetValue(profileId, "Remote.BuildPath", remoteBuildPath);
+        profileSettings.SetValue(profileId, "Remote.LoadPath", remoteLoadPath);
 
-        // Ensure the settings are saved and applied
-        AddressableAssetSettingsDefaultObject.Settings.activeProfileId = profileId;
-        EditorUtility.SetDirty(AddressableAssetSettingsDefaultObject.Settings);
+        // Save the modified settings
+        EditorUtility.SetDirty(settings);
         AssetDatabase.SaveAssets();
 
-        Debug.Log($"Addressable paths set to: {buildPath}");
+        Debug.Log($"Addressable paths set to: {remoteBuildPath}");
     }
 
     private static void BuildAddressables()
