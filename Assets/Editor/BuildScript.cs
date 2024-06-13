@@ -16,7 +16,6 @@ public class BuildScript
         Debug.Log("BuildAndroidAddressables - Build Version: " + buildVersion);
         Debug.Log("BuildAndroidAddressables - Build Number: " + buildNumber);
 
-        ResetAddressableSettings();
         SetAddressablePaths("Android", buildNumber);
         EnableBuildRemoteCatalog();
         CleanAddressables();
@@ -30,7 +29,6 @@ public class BuildScript
         Debug.Log("UpdateAndroidAddressables - Build Version: " + buildVersion);
         Debug.Log("UpdateAndroidAddressables - Build Number: " + buildNumber);
 
-        ResetAddressableSettings();
         SetAddressablePaths("Android", buildNumber);
         EnableBuildRemoteCatalog();
         BuildAddressables();
@@ -69,7 +67,6 @@ public class BuildScript
         Debug.Log("BuildIOSAddressables - Build Version: " + buildVersion);
         Debug.Log("BuildIOSAddressables - Build Number: " + buildNumber);
 
-        ResetAddressableSettings();
         SetAddressablePaths("iOS", buildNumber);
         EnableBuildRemoteCatalog();
         CleanAddressables();
@@ -83,7 +80,6 @@ public class BuildScript
         Debug.Log("UpdateIOSAddressables - Build Version: " + buildVersion);
         Debug.Log("UpdateIOSAddressables - Build Number: " + buildNumber);
 
-        ResetAddressableSettings();
         SetAddressablePaths("iOS", buildNumber);
         EnableBuildRemoteCatalog();
         BuildAddressables();
@@ -133,23 +129,16 @@ public class BuildScript
         Debug.Log("SetAddressablePaths - RemoteBuildPath: " + remoteBuildPath);
         Debug.Log("SetAddressablePaths - RemoteLoadPath: " + remoteLoadPath);
 
-        profileSettings.SetValue(profileId, "RemoteBuildPath", remoteBuildPath);
-        profileSettings.SetValue(profileId, "RemoteLoadPath", remoteLoadPath);
+        profileSettings.SetValue(profileId, "Remote.BuildPath", remoteBuildPath);
+        profileSettings.SetValue(profileId, "Remote.LoadPath", remoteLoadPath);
 
         Debug.Log("SetAddressablePaths - Profile settings updated.");
 
         // Save the modified settings
-        EditorUtility.SetDirty(settings);
         AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
 
         Debug.Log($"Addressable paths set to: {remoteBuildPath}");
-    }
-
-    private static void ResetAddressableSettings()
-    {
-        AddressableAssetSettingsDefaultObject.Settings = null;
-        AddressableAssetSettingsDefaultObject.Settings = AddressableAssetSettingsDefaultObject.GetSettings(false);
-        Debug.Log("Addressable settings reset.");
     }
 
     private static void EnableBuildRemoteCatalog()
