@@ -13,7 +13,16 @@ public class BuildScript
     {
         string buildVersion = GetCommandLineArg("-buildVersion");
         SetVersion(buildVersion);
-        SetAddressablePaths(BuildTarget.Android, buildVersion);
+        SetAddressablePaths("Android", buildVersion);
+        CleanAddressables();
+        BuildAddressables();
+    }
+
+    public static void UpdateAndroidAddressables()
+    {
+        string buildVersion = GetCommandLineArg("-buildVersion");
+        SetVersion(buildVersion);
+        SetAddressablePaths("Android", buildVersion);
         BuildAddressables();
     }
 
@@ -37,7 +46,16 @@ public class BuildScript
     {
         string buildVersion = GetCommandLineArg("-buildVersion");
         SetVersion(buildVersion);
-        SetAddressablePaths(BuildTarget.iOS, buildVersion);
+        SetAddressablePaths("iOS", buildVersion);
+        CleanAddressables();
+        BuildAddressables();
+    }
+
+    public static void UpdateIOSAddressables()
+    {
+        string buildVersion = GetCommandLineArg("-buildVersion");
+        SetVersion(buildVersion);
+        SetAddressablePaths("iOS", buildVersion);
         BuildAddressables();
     }
 
@@ -48,24 +66,30 @@ public class BuildScript
         BuildPlayer(BuildTarget.iOS, "Builds/iOS");
     }
 
-    private static void SetAddressablePaths(BuildTarget target, string version)
+    private static void SetAddressablePaths(string platform, string version)
     {
         var settings = AddressableAssetSettingsDefaultObject.Settings;
         var profileSettings = settings.profileSettings;
         var profileId = settings.activeProfileId;
 
-        string platform = target.ToString();
         string remoteBuildPath = $"ServerData/{platform}/{version}";
         string remoteLoadPath = $"ServerData/{platform}/{version}";
 
-        profileSettings.SetValue(profileId, "Remote.BuildPath", remoteBuildPath);
-        profileSettings.SetValue(profileId, "Remote.LoadPath", remoteLoadPath);
+        profileSettings.SetValue(profileId, "RemoteBuildPath", remoteBuildPath);
+        profileSettings.SetValue(profileId, "RemoteLoadPath", remoteLoadPath);
 
         // Save the modified settings
         EditorUtility.SetDirty(settings);
         AssetDatabase.SaveAssets();
 
         Debug.Log($"Addressable paths set to: {remoteBuildPath}");
+    }
+
+    private static void CleanAddressables()
+    {
+        var settings = AddressableAssetSettingsDefaultObject.Settings;
+        AddressableAssetSettings.CleanPlayerContent(settings.ActivePlayerDataBuilder);
+        Debug.Log("Cleaned Addressables content");
     }
 
     private static void BuildAddressables()
