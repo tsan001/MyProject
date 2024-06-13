@@ -12,8 +12,9 @@ public class BuildScript
     public static void BuildAndroidAddressables()
     {
         string buildVersion = GetCommandLineArg("-buildVersion");
-        SetAddressableVersion();
-        SetAddressablePaths("Android", buildVersion);
+        string buildNumber = GetCommandLineArg("-buildNumber");
+        SetVersion(buildVersion);
+        SetAddressablePaths("Android", buildNumber);
         CleanAddressables();
         BuildAddressables();
     }
@@ -21,8 +22,9 @@ public class BuildScript
     public static void UpdateAndroidAddressables()
     {
         string buildVersion = GetCommandLineArg("-buildVersion");
-        SetAddressableVersion();
-        SetAddressablePaths("Android", buildVersion);
+        string buildNumber = GetCommandLineArg("-buildNumber");
+        SetVersion(buildVersion);
+        SetAddressablePaths("Android", buildNumber);
         BuildAddressables();
     }
 
@@ -45,8 +47,9 @@ public class BuildScript
     public static void BuildIOSAddressables()
     {
         string buildVersion = GetCommandLineArg("-buildVersion");
-        SetAddressableVersion();
-        SetAddressablePaths("iOS", buildVersion);
+        string buildNumber = GetCommandLineArg("-buildNumber");
+        SetVersion(buildVersion);
+        SetAddressablePaths("iOS", buildNumber);
         CleanAddressables();
         BuildAddressables();
     }
@@ -54,8 +57,9 @@ public class BuildScript
     public static void UpdateIOSAddressables()
     {
         string buildVersion = GetCommandLineArg("-buildVersion");
-        SetAddressableVersion();
-        SetAddressablePaths("iOS", buildVersion);
+        string buildNumber = GetCommandLineArg("-buildNumber");
+        SetVersion(buildVersion);
+        SetAddressablePaths("iOS", buildNumber);
         BuildAddressables();
     }
 
@@ -66,28 +70,14 @@ public class BuildScript
         BuildPlayer(BuildTarget.iOS, "Builds/iOS");
     }
 
-    private static void SetAddressableVersion()
-    {
-        var buildNumber = GetCommandLineArg("-buildNumber");
-        if (buildNumber != null)
-        {
-            PlayerSettings.bundleVersion = buildNumber;
-            Debug.Log($"Addressable version set to: {buildNumber}");
-        }
-        else
-        {
-            Debug.LogError("Build number not found in command line arguments.");
-        }
-    }
-
-    private static void SetAddressablePaths(string platform, string version)
+    private static void SetAddressablePaths(string platform, string buildNumber)
     {
         var settings = AddressableAssetSettingsDefaultObject.Settings;
         var profileSettings = settings.profileSettings;
         var profileId = settings.activeProfileId;
 
-        string remoteBuildPath = $"ServerData/{platform}/{version}";
-        string remoteLoadPath = $"ServerData/{platform}/{version}";
+        string remoteBuildPath = $"ServerData/{platform}/{buildNumber}";
+        string remoteLoadPath = $"ServerData/{platform}/{buildNumber}";
 
         profileSettings.SetValue(profileId, "RemoteBuildPath", remoteBuildPath);
         profileSettings.SetValue(profileId, "RemoteLoadPath", remoteLoadPath);
