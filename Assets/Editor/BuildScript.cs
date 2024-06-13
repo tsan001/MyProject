@@ -57,8 +57,13 @@ public class BuildScript
         string buildPath = $"ServerData/{platform}/{version}";
         string loadPath = $"ServerData/{platform}/{version}";
 
-        profileSettings.SetValue(profileId, "LocalBuildPath", buildPath);
-        profileSettings.SetValue(profileId, "LocalLoadPath", loadPath);
+        profileSettings.SetValue(profileId, "RemoteBuildPath", buildPath);
+        profileSettings.SetValue(profileId, "RemoteLoadPath", loadPath);
+
+        // Ensure the settings are saved and applied
+        AddressableAssetSettingsDefaultObject.Settings.activeProfileId = profileId;
+        EditorUtility.SetDirty(AddressableAssetSettingsDefaultObject.Settings);
+        AssetDatabase.SaveAssets();
 
         Debug.Log($"Addressable paths set to: {buildPath}");
     }
