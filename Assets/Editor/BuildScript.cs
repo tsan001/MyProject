@@ -13,7 +13,6 @@ public class BuildScript
     {
         string buildVersion = GetCommandLineArg("-buildVersion");
         string buildNumber = GetCommandLineArg("-buildNumber");
-        SetVersion(buildVersion);
         SetAddressablePaths("Android", buildNumber);
         CleanAddressables();
         BuildAddressables();
@@ -23,7 +22,6 @@ public class BuildScript
     {
         string buildVersion = GetCommandLineArg("-buildVersion");
         string buildNumber = GetCommandLineArg("-buildNumber");
-        SetVersion(buildVersion);
         SetAddressablePaths("Android", buildNumber);
         BuildAddressables();
     }
@@ -48,7 +46,6 @@ public class BuildScript
     {
         string buildVersion = GetCommandLineArg("-buildVersion");
         string buildNumber = GetCommandLineArg("-buildNumber");
-        SetVersion(buildVersion);
         SetAddressablePaths("iOS", buildNumber);
         CleanAddressables();
         BuildAddressables();
@@ -58,7 +55,6 @@ public class BuildScript
     {
         string buildVersion = GetCommandLineArg("-buildVersion");
         string buildNumber = GetCommandLineArg("-buildNumber");
-        SetVersion(buildVersion);
         SetAddressablePaths("iOS", buildNumber);
         BuildAddressables();
     }
@@ -72,6 +68,12 @@ public class BuildScript
 
     private static void SetAddressablePaths(string platform, string buildNumber)
     {
+        if (string.IsNullOrEmpty(buildNumber))
+        {
+            Debug.LogError("Build number not provided. Using 'Version' as default.");
+            buildNumber = "Version";
+        }
+
         var settings = AddressableAssetSettingsDefaultObject.Settings;
         var profileSettings = settings.profileSettings;
         var profileId = settings.activeProfileId;
