@@ -12,7 +12,7 @@ public class BuildScript
     public static void BuildAndroidAddressables()
     {
         string buildVersion = GetCommandLineArg("-buildVersion");
-        SetVersion(buildVersion);
+        SetAddressableVersion();
         SetAddressablePaths("Android", buildVersion);
         CleanAddressables();
         BuildAddressables();
@@ -21,7 +21,7 @@ public class BuildScript
     public static void UpdateAndroidAddressables()
     {
         string buildVersion = GetCommandLineArg("-buildVersion");
-        SetVersion(buildVersion);
+        SetAddressableVersion();
         SetAddressablePaths("Android", buildVersion);
         BuildAddressables();
     }
@@ -45,7 +45,7 @@ public class BuildScript
     public static void BuildIOSAddressables()
     {
         string buildVersion = GetCommandLineArg("-buildVersion");
-        SetVersion(buildVersion);
+        SetAddressableVersion();
         SetAddressablePaths("iOS", buildVersion);
         CleanAddressables();
         BuildAddressables();
@@ -54,7 +54,7 @@ public class BuildScript
     public static void UpdateIOSAddressables()
     {
         string buildVersion = GetCommandLineArg("-buildVersion");
-        SetVersion(buildVersion);
+        SetAddressableVersion();
         SetAddressablePaths("iOS", buildVersion);
         BuildAddressables();
     }
@@ -64,6 +64,20 @@ public class BuildScript
         string buildVersion = GetCommandLineArg("-buildVersion");
         SetVersion(buildVersion);
         BuildPlayer(BuildTarget.iOS, "Builds/iOS");
+    }
+
+    private static void SetAddressableVersion()
+    {
+        var buildNumber = GetCommandLineArg("-buildNumber");
+        if (buildNumber != null)
+        {
+            PlayerSettings.bundleVersion = buildNumber;
+            Debug.Log($"Addressable version set to: {buildNumber}");
+        }
+        else
+        {
+            Debug.LogError("Build number not found in command line arguments.");
+        }
     }
 
     private static void SetAddressablePaths(string platform, string version)
@@ -127,7 +141,7 @@ public class BuildScript
     private static void SetVersion(string version)
     {
         PlayerSettings.bundleVersion = version;
-        PlayerSettings.Android.bundleVersionCode = int.Parse(version);
+        PlayerSettings.Android.bundleVersionCode = int.Parse(version.Split('.')[2]);
         PlayerSettings.iOS.buildNumber = version;
     }
 
