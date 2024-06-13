@@ -12,66 +12,58 @@ public class BuildScript
     private static string buildVersion;
     private static string buildNumber;
 
-    public static void BuildAndroidAddressables(string version, string number)
+    static BuildScript()
     {
-        buildVersion = version;
-        buildNumber = number;
+        buildVersion = System.Environment.GetEnvironmentVariable("BUILD_VERSION");
+        buildNumber = System.Environment.GetEnvironmentVariable("BUILD_NUMBER");
+    }
+
+    public static void BuildAndroidAddressables()
+    {
         Debug.Log("Build Number: " + buildNumber);
         SetAddressablePaths("Android", buildNumber);
         CleanAddressables();
         BuildAddressables();
     }
 
-    public static void UpdateAndroidAddressables(string version, string number)
+    public static void UpdateAndroidAddressables()
     {
-        buildVersion = version;
-        buildNumber = number;
         Debug.Log("Build Number: " + buildNumber);
         SetAddressablePaths("Android", buildNumber);
         BuildAddressables();
     }
 
-    public static void BuildAndroidPlayer(string version, string number)
+    public static void BuildAndroidPlayer()
     {
-        buildVersion = version;
-        buildNumber = number;
         SetVersion(buildVersion);
         BuildPlayer(BuildTarget.Android, "Builds/Android/MyGame.apk", buildNumber);
     }
 
-    public static void BuildAndroidBundle(string version, string number)
+    public static void BuildAndroidBundle()
     {
-        buildVersion = version;
-        buildNumber = number;
         SetVersion(buildVersion);
         EditorUserBuildSettings.buildAppBundle = true;
         BuildPlayer(BuildTarget.Android, "Builds/Android/MyGame.aab", buildNumber);
         EditorUserBuildSettings.buildAppBundle = false; // Reset to default after build
     }
 
-    public static void BuildIOSAddressables(string version, string number)
+    public static void BuildIOSAddressables()
     {
-        buildVersion = version;
-        buildNumber = number;
         Debug.Log("Build Number: " + buildNumber);
         SetAddressablePaths("iOS", buildNumber);
         CleanAddressables();
         BuildAddressables();
     }
 
-    public static void UpdateIOSAddressables(string version, string number)
+    public static void UpdateIOSAddressables()
     {
-        buildVersion = version;
-        buildNumber = number;
         Debug.Log("Build Number: " + buildNumber);
         SetAddressablePaths("iOS", buildNumber);
         BuildAddressables();
     }
 
-    public static void BuildIOSPlayer(string version, string number)
+    public static void BuildIOSPlayer()
     {
-        buildVersion = version;
-        buildNumber = number;
         SetVersion(buildVersion);
         BuildPlayer(BuildTarget.iOS, "Builds/iOS", buildNumber);
     }
