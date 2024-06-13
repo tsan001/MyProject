@@ -4,6 +4,7 @@ using UnityEditor.AddressableAssets.Build;
 using UnityEditor.Build.Reporting;
 using System.Linq;
 using System.IO;
+using UnityEditor.AddressableAssets;
 using UnityEngine;
 
 public class BuildScript
@@ -12,7 +13,8 @@ public class BuildScript
     {
         string buildVersion = GetCommandLineArg("-buildVersion");
         SetVersion(buildVersion);
-        BuildAddressables(buildVersion, "Android");
+        SetAddressablePaths("Android", buildVersion);
+        BuildAddressables();
     }
 
     public static void BuildAndroidPlayer()
@@ -35,7 +37,8 @@ public class BuildScript
     {
         string buildVersion = GetCommandLineArg("-buildVersion");
         SetVersion(buildVersion);
-        BuildAddressables(buildVersion, "iOS");
+        SetAddressablePaths("iOS", buildVersion);
+        BuildAddressables();
     }
 
     public static void BuildIOSPlayer()
@@ -45,31 +48,24 @@ public class BuildScript
         BuildPlayer(BuildTarget.iOS, "Builds/iOS");
     }
 
-    private static void BuildAddressables(string version, string platform)
+    private static void SetAddressablePaths(string platform, string version)
     {
-        AddressableAssetSettings.BuildPlayerContent();
-        string sourceFolder = $"Library/com.unity.addressables/aa/{platform.ToLower()}";
-        string targetFolder = $"serverdata/{platform.ToLower()}/{version}";
+        var settings = AddressableAssetSettingsDefaultObject.Settings;
+        var profileSettings = settings.profileSettings;
+        var profileId = settings.activeProfileId;
 
-        if (!Directory.Exists(targetFolder))
-        {
-            Directory.CreateDirectory(targetFolder);
-        }
+        string buildPath = $"ServerData/{platform}/{version}";
+        string loadPath = $"ServerData/{platform}/{version}";
 
-        CopyFilesRecursively(sourceFolder, targetFolder);
+        profileSettings.SetValue(profileId, "LocalBuildPath", buildPath);
+        profileSettings.SetValue(profileId, "LocalLoadPath", loadPath);
+
+        Debug.Log($"Addressable paths set to: {buildPath}");
     }
 
-    private static void CopyFilesRecursively(string sourcePath, string targetPath)
+    private static void BuildAddressables()
     {
-        foreach (string dirPath in Directory.GetDirectories(sourcePath, "*", SearchOption.AllDirectories))
-        {
-            Directory.CreateDirectory(dirPath.Replace(sourcePath, targetPath));
-        }
-
-        foreach (string newPath in Directory.GetFiles(sourcePath, "*.*", SearchOption.AllDirectories))
-        {
-            File.Copy(newPath, newPath.Replace(sourcePath, targetPath), true);
-        }
+        AddressableAssetSettings.BuildPlayerContent();
     }
 
     private static void BuildPlayer(BuildTarget target, string locationPathName)
