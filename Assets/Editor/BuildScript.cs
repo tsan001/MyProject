@@ -16,6 +16,7 @@ public class BuildScript
         Debug.Log("BuildAndroidAddressables - Build Version: " + buildVersion);
         Debug.Log("BuildAndroidAddressables - Build Number: " + buildNumber);
 
+        ResetAddressableSettings();
         SetAddressablePaths("Android", buildNumber);
         EnableBuildRemoteCatalog();
         CleanAddressables();
@@ -29,6 +30,7 @@ public class BuildScript
         Debug.Log("UpdateAndroidAddressables - Build Version: " + buildVersion);
         Debug.Log("UpdateAndroidAddressables - Build Number: " + buildNumber);
 
+        ResetAddressableSettings();
         SetAddressablePaths("Android", buildNumber);
         EnableBuildRemoteCatalog();
         BuildAddressables();
@@ -67,6 +69,7 @@ public class BuildScript
         Debug.Log("BuildIOSAddressables - Build Version: " + buildVersion);
         Debug.Log("BuildIOSAddressables - Build Number: " + buildNumber);
 
+        ResetAddressableSettings();
         SetAddressablePaths("iOS", buildNumber);
         EnableBuildRemoteCatalog();
         CleanAddressables();
@@ -80,6 +83,7 @@ public class BuildScript
         Debug.Log("UpdateIOSAddressables - Build Version: " + buildVersion);
         Debug.Log("UpdateIOSAddressables - Build Number: " + buildNumber);
 
+        ResetAddressableSettings();
         SetAddressablePaths("iOS", buildNumber);
         EnableBuildRemoteCatalog();
         BuildAddressables();
@@ -103,8 +107,25 @@ public class BuildScript
         Debug.Log("SetAddressablePaths - Build Number: " + buildNumber);
 
         var settings = AddressableAssetSettingsDefaultObject.Settings;
+        if (settings == null)
+        {
+            Debug.LogError("AddressableAssetSettings is null. Ensure Addressable Assets is properly configured.");
+            return;
+        }
+
         var profileSettings = settings.profileSettings;
+        if (profileSettings == null)
+        {
+            Debug.LogError("ProfileSettings is null. Ensure Addressable Assets is properly configured.");
+            return;
+        }
+
         var profileId = settings.activeProfileId;
+        if (string.IsNullOrEmpty(profileId))
+        {
+            Debug.LogError("ActiveProfileId is null or empty. Ensure Addressable Assets is properly configured.");
+            return;
+        }
 
         string remoteBuildPath = $"ServerData/{platform}/{buildNumber}";
         string remoteLoadPath = $"ServerData/{platform}/{buildNumber}";
@@ -115,11 +136,20 @@ public class BuildScript
         profileSettings.SetValue(profileId, "RemoteBuildPath", remoteBuildPath);
         profileSettings.SetValue(profileId, "RemoteLoadPath", remoteLoadPath);
 
+        Debug.Log("SetAddressablePaths - Profile settings updated.");
+
         // Save the modified settings
         EditorUtility.SetDirty(settings);
         AssetDatabase.SaveAssets();
 
         Debug.Log($"Addressable paths set to: {remoteBuildPath}");
+    }
+
+    private static void ResetAddressableSettings()
+    {
+        AddressableAssetSettingsDefaultObject.Settings = null;
+        AddressableAssetSettingsDefaultObject.Settings = AddressableAssetSettingsDefaultObject.GetSettings(false);
+        Debug.Log("Addressable settings reset.");
     }
 
     private static void EnableBuildRemoteCatalog()
