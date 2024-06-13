@@ -12,7 +12,7 @@ public class BuildScript
     public static void BuildAndroidAddressables()
     {
         string buildVersion = GetCommandLineArg("-buildVersion");
-        string buildNumber = GetCommandLineArg("-buildNumber");
+        string buildNumber = GetCommandLineArg("-buildNumber") ?? System.Environment.GetEnvironmentVariable("BUILD_NUMBER");
         Debug.Log("BuildAndroidAddressables - Build Version: " + buildVersion);
         Debug.Log("BuildAndroidAddressables - Build Number: " + buildNumber);
 
@@ -25,7 +25,7 @@ public class BuildScript
     public static void UpdateAndroidAddressables()
     {
         string buildVersion = GetCommandLineArg("-buildVersion");
-        string buildNumber = GetCommandLineArg("-buildNumber");
+        string buildNumber = GetCommandLineArg("-buildNumber") ?? System.Environment.GetEnvironmentVariable("BUILD_NUMBER");
         Debug.Log("UpdateAndroidAddressables - Build Version: " + buildVersion);
         Debug.Log("UpdateAndroidAddressables - Build Number: " + buildNumber);
 
@@ -37,7 +37,7 @@ public class BuildScript
     public static void BuildAndroidPlayer()
     {
         string buildVersion = GetCommandLineArg("-buildVersion");
-        string buildNumber = GetCommandLineArg("-buildNumber");
+        string buildNumber = GetCommandLineArg("-buildNumber") ?? System.Environment.GetEnvironmentVariable("BUILD_NUMBER");
         Debug.Log("BuildAndroidPlayer - Build Version: " + buildVersion);
         Debug.Log("BuildAndroidPlayer - Build Number: " + buildNumber);
 
@@ -49,7 +49,7 @@ public class BuildScript
     public static void BuildAndroidBundle()
     {
         string buildVersion = GetCommandLineArg("-buildVersion");
-        string buildNumber = GetCommandLineArg("-buildNumber");
+        string buildNumber = GetCommandLineArg("-buildNumber") ?? System.Environment.GetEnvironmentVariable("BUILD_NUMBER");
         Debug.Log("BuildAndroidBundle - Build Version: " + buildVersion);
         Debug.Log("BuildAndroidBundle - Build Number: " + buildNumber);
 
@@ -63,7 +63,7 @@ public class BuildScript
     public static void BuildIOSAddressables()
     {
         string buildVersion = GetCommandLineArg("-buildVersion");
-        string buildNumber = GetCommandLineArg("-buildNumber");
+        string buildNumber = GetCommandLineArg("-buildNumber") ?? System.Environment.GetEnvironmentVariable("BUILD_NUMBER");
         Debug.Log("BuildIOSAddressables - Build Version: " + buildVersion);
         Debug.Log("BuildIOSAddressables - Build Number: " + buildNumber);
 
@@ -76,7 +76,7 @@ public class BuildScript
     public static void UpdateIOSAddressables()
     {
         string buildVersion = GetCommandLineArg("-buildVersion");
-        string buildNumber = GetCommandLineArg("-buildNumber");
+        string buildNumber = GetCommandLineArg("-buildNumber") ?? System.Environment.GetEnvironmentVariable("BUILD_NUMBER");
         Debug.Log("UpdateIOSAddressables - Build Version: " + buildVersion);
         Debug.Log("UpdateIOSAddressables - Build Number: " + buildNumber);
 
@@ -88,7 +88,7 @@ public class BuildScript
     public static void BuildIOSPlayer()
     {
         string buildVersion = GetCommandLineArg("-buildVersion");
-        string buildNumber = GetCommandLineArg("-buildNumber");
+        string buildNumber = GetCommandLineArg("-buildNumber") ?? System.Environment.GetEnvironmentVariable("BUILD_NUMBER");
         Debug.Log("BuildIOSPlayer - Build Version: " + buildVersion);
         Debug.Log("BuildIOSPlayer - Build Number: " + buildNumber);
 
@@ -101,13 +101,6 @@ public class BuildScript
     {
         Debug.Log("SetAddressablePaths - Platform: " + platform);
         Debug.Log("SetAddressablePaths - Build Number: " + buildNumber);
-
-        if (string.IsNullOrEmpty(buildNumber))
-        {
-            Debug.LogError("Build number not provided. Using 'Version' as default.");
-            buildNumber = System.Environment.GetEnvironmentVariable("BUILD_NUMBER");
-            Debug.Log("SetAddressablePaths - Environment BUILD_NUMBER: " + buildNumber);
-        }
 
         var settings = AddressableAssetSettingsDefaultObject.Settings;
         var profileSettings = settings.profileSettings;
