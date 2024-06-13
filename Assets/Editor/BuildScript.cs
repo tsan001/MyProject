@@ -12,6 +12,7 @@ public class BuildScript
     public static void BuildAndroidAddressables()
     {
         string buildNumber = GetCommandLineArg("-buildNumber");
+        Debug.Log("Build Number: " + buildNumber); // Debug log 추가
         SetAddressablePaths("Android", buildNumber);
         CleanAddressables();
         BuildAddressables();
@@ -20,6 +21,7 @@ public class BuildScript
     public static void UpdateAndroidAddressables()
     {
         string buildNumber = GetCommandLineArg("-buildNumber");
+        Debug.Log("Build Number: " + buildNumber); // Debug log 추가
         SetAddressablePaths("Android", buildNumber);
         BuildAddressables();
     }
@@ -43,6 +45,7 @@ public class BuildScript
     public static void BuildIOSAddressables()
     {
         string buildNumber = GetCommandLineArg("-buildNumber");
+        Debug.Log("Build Number: " + buildNumber); // Debug log 추가
         SetAddressablePaths("iOS", buildNumber);
         CleanAddressables();
         BuildAddressables();
@@ -51,6 +54,7 @@ public class BuildScript
     public static void UpdateIOSAddressables()
     {
         string buildNumber = GetCommandLineArg("-buildNumber");
+        Debug.Log("Build Number: " + buildNumber); // Debug log 추가
         SetAddressablePaths("iOS", buildNumber);
         BuildAddressables();
     }
