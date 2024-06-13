@@ -9,61 +9,71 @@ using UnityEngine;
 
 public class BuildScript
 {
-    public static void BuildAndroidAddressables()
+    private static string buildVersion;
+    private static string buildNumber;
+
+    public static void BuildAndroidAddressables(string version, string number)
     {
-        string buildNumber = GetCommandLineArg("-buildNumber");
-        Debug.Log("Build Number: " + buildNumber); // Debug log 추가
+        buildVersion = version;
+        buildNumber = number;
+        Debug.Log("Build Number: " + buildNumber);
         SetAddressablePaths("Android", buildNumber);
         CleanAddressables();
         BuildAddressables();
     }
 
-    public static void UpdateAndroidAddressables()
+    public static void UpdateAndroidAddressables(string version, string number)
     {
-        string buildNumber = GetCommandLineArg("-buildNumber");
-        Debug.Log("Build Number: " + buildNumber); // Debug log 추가
+        buildVersion = version;
+        buildNumber = number;
+        Debug.Log("Build Number: " + buildNumber);
         SetAddressablePaths("Android", buildNumber);
         BuildAddressables();
     }
 
-    public static void BuildAndroidPlayer()
+    public static void BuildAndroidPlayer(string version, string number)
     {
-        string buildVersion = GetCommandLineArg("-buildVersion");
+        buildVersion = version;
+        buildNumber = number;
         SetVersion(buildVersion);
-        BuildPlayer(BuildTarget.Android, "Builds/Android/MyGame.apk");
+        BuildPlayer(BuildTarget.Android, "Builds/Android/MyGame.apk", buildNumber);
     }
 
-    public static void BuildAndroidBundle()
+    public static void BuildAndroidBundle(string version, string number)
     {
-        string buildVersion = GetCommandLineArg("-buildVersion");
+        buildVersion = version;
+        buildNumber = number;
         SetVersion(buildVersion);
         EditorUserBuildSettings.buildAppBundle = true;
-        BuildPlayer(BuildTarget.Android, "Builds/Android/MyGame.aab");
+        BuildPlayer(BuildTarget.Android, "Builds/Android/MyGame.aab", buildNumber);
         EditorUserBuildSettings.buildAppBundle = false; // Reset to default after build
     }
 
-    public static void BuildIOSAddressables()
+    public static void BuildIOSAddressables(string version, string number)
     {
-        string buildNumber = GetCommandLineArg("-buildNumber");
-        Debug.Log("Build Number: " + buildNumber); // Debug log 추가
+        buildVersion = version;
+        buildNumber = number;
+        Debug.Log("Build Number: " + buildNumber);
         SetAddressablePaths("iOS", buildNumber);
         CleanAddressables();
         BuildAddressables();
     }
 
-    public static void UpdateIOSAddressables()
+    public static void UpdateIOSAddressables(string version, string number)
     {
-        string buildNumber = GetCommandLineArg("-buildNumber");
-        Debug.Log("Build Number: " + buildNumber); // Debug log 추가
+        buildVersion = version;
+        buildNumber = number;
+        Debug.Log("Build Number: " + buildNumber);
         SetAddressablePaths("iOS", buildNumber);
         BuildAddressables();
     }
 
-    public static void BuildIOSPlayer()
+    public static void BuildIOSPlayer(string version, string number)
     {
-        string buildVersion = GetCommandLineArg("-buildVersion");
+        buildVersion = version;
+        buildNumber = number;
         SetVersion(buildVersion);
-        BuildPlayer(BuildTarget.iOS, "Builds/iOS");
+        BuildPlayer(BuildTarget.iOS, "Builds/iOS", buildNumber);
     }
 
     private static void SetAddressablePaths(string platform, string buildNumber)
@@ -103,8 +113,10 @@ public class BuildScript
         AddressableAssetSettings.BuildPlayerContent();
     }
 
-    private static void BuildPlayer(BuildTarget target, string locationPathName)
+    private static void BuildPlayer(BuildTarget target, string locationPathName, string buildNumber)
     {
+        SetAddressablePaths(target.ToString(), buildNumber); // Ensure paths are correct before build
+
         // Get scenes included in the build settings
         string[] scenes = EditorBuildSettings.scenes
             .Where(scene => scene.enabled)
@@ -135,18 +147,5 @@ public class BuildScript
         PlayerSettings.bundleVersion = version;
         PlayerSettings.Android.bundleVersionCode = int.Parse(version.Split('.')[2]);
         PlayerSettings.iOS.buildNumber = version;
-    }
-
-    private static string GetCommandLineArg(string name)
-    {
-        var args = System.Environment.GetCommandLineArgs();
-        for (int i = 0; i < args.Length; i++)
-        {
-            if (args[i] == name && args.Length > i + 1)
-            {
-                return args[i + 1];
-            }
-        }
-        return null;
     }
 }
