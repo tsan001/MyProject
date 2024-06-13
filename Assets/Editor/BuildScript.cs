@@ -4,6 +4,7 @@ using UnityEditor.AddressableAssets.Build;
 using UnityEditor.Build.Reporting;
 using System.Linq;
 using System.IO;
+using System.Threading;
 using UnityEditor.AddressableAssets;
 using UnityEngine;
 
@@ -17,6 +18,7 @@ public class BuildScript
         Debug.Log("Build Number: " + buildNumber);
 
         SetAddressablePaths("Android", buildNumber);
+        EnableBuildRemoteCatalog();
         CleanAddressables();
         BuildAddressables();
     }
@@ -29,6 +31,7 @@ public class BuildScript
         Debug.Log("Build Number: " + buildNumber);
 
         SetAddressablePaths("Android", buildNumber);
+        EnableBuildRemoteCatalog();
         BuildAddressables();
     }
 
@@ -37,6 +40,7 @@ public class BuildScript
         string buildVersion = GetCommandLineArg("-buildVersion");
         string buildNumber = GetCommandLineArg("-buildNumber");
         SetVersion(buildVersion);
+        DisableBuildRemoteCatalog();
         BuildPlayer(BuildTarget.Android, "Builds/Android/MyGame.apk");
     }
 
@@ -45,6 +49,7 @@ public class BuildScript
         string buildVersion = GetCommandLineArg("-buildVersion");
         string buildNumber = GetCommandLineArg("-buildNumber");
         SetVersion(buildVersion);
+        DisableBuildRemoteCatalog();
         EditorUserBuildSettings.buildAppBundle = true;
         BuildPlayer(BuildTarget.Android, "Builds/Android/MyGame.aab");
         EditorUserBuildSettings.buildAppBundle = false; // Reset to default after build
@@ -58,6 +63,7 @@ public class BuildScript
         Debug.Log("Build Number: " + buildNumber);
 
         SetAddressablePaths("iOS", buildNumber);
+        EnableBuildRemoteCatalog();
         CleanAddressables();
         BuildAddressables();
     }
@@ -70,6 +76,7 @@ public class BuildScript
         Debug.Log("Build Number: " + buildNumber);
 
         SetAddressablePaths("iOS", buildNumber);
+        EnableBuildRemoteCatalog();
         BuildAddressables();
     }
 
@@ -78,6 +85,7 @@ public class BuildScript
         string buildVersion = GetCommandLineArg("-buildVersion");
         string buildNumber = GetCommandLineArg("-buildNumber");
         SetVersion(buildVersion);
+        DisableBuildRemoteCatalog();
         BuildPlayer(BuildTarget.iOS, "Builds/iOS");
     }
 
@@ -104,6 +112,27 @@ public class BuildScript
         AssetDatabase.SaveAssets();
 
         Debug.Log($"Addressable paths set to: {remoteBuildPath}");
+
+        // Adding sleep to ensure settings are saved before proceeding
+        Thread.Sleep(5000); // Sleep for 5 seconds
+    }
+
+    private static void EnableBuildRemoteCatalog()
+    {
+        var settings = AddressableAssetSettingsDefaultObject.Settings;
+        settings.BuildRemoteCatalog = true;
+        EditorUtility.SetDirty(settings);
+        AssetDatabase.SaveAssets();
+        Thread.Sleep(5000); // Sleep for 5 seconds
+    }
+
+    private static void DisableBuildRemoteCatalog()
+    {
+        var settings = AddressableAssetSettingsDefaultObject.Settings;
+        settings.BuildRemoteCatalog = false;
+        EditorUtility.SetDirty(settings);
+        AssetDatabase.SaveAssets();
+        Thread.Sleep(5000); // Sleep for 5 seconds
     }
 
     private static void CleanAddressables()
