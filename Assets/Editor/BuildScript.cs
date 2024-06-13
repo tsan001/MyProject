@@ -127,7 +127,7 @@ public class BuildScript
     private static void SetVersion(string version)
     {
         PlayerSettings.bundleVersion = version;
-        PlayerSettings.Android.bundleVersionCode = int.Parse(version.Split('.')[2]);
+        PlayerSettings.Android.bundleVersionCode = int.Parse(version);
         PlayerSettings.iOS.buildNumber = version;
     }
 
